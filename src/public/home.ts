@@ -35,8 +35,8 @@ const HOLES: HolePos[] = [
   { slug: "mirror",       x: 88, y: 14 },   // top-right
   { slug: "oracle",       x: 8,  y: 52 },   // mid-left
   { slug: "cartographer", x: 92, y: 52 },   // mid-right
-  { slug: "names",        x: 22, y: 70 },   // lower-left (away from ball at base)
-  { slug: "stone",        x: 78, y: 70 },   // lower-right
+  { slug: "names",        x: 28, y: 28 },   // upper-left, just above the sigil
+  { slug: "stone",        x: 72, y: 28 },   // upper-right, just above the sigil
 ];
 
 function holeSvg(slug: string): string {
