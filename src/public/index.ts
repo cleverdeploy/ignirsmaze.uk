@@ -2,19 +2,29 @@ import { Hono } from "hono";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { readFileSync } from "node:fs";
 import { sessionMiddleware } from "../session.js";
+import { eventsRouter } from "./events.js";
 
 export function publicApp(): Hono {
   const app = new Hono();
 
   app.use("*", sessionMiddleware);
 
-  // Serve the existing static site at /
+  // Existing static homepage with client-base.js injected
   app.get("/", (c) => {
-    const body = readFileSync("./website/index.html", "utf8");
+    let body = readFileSync("./website/index.html", "utf8");
+    if (!body.includes("client-base.js")) {
+      body = body.replace(
+        "</body>",
+        '<script src="/client-base.js"></script></body>'
+      );
+    }
     return c.html(body);
   });
 
-  // Static assets from website/ (styles.css, favicon.svg) and public/ (future)
+  // Analytics + discovery endpoints
+  app.route("/", eventsRouter());
+
+  // Static assets
   app.use("/styles.css", serveStatic({ path: "./website/styles.css" }));
   app.use("/favicon.svg", serveStatic({ path: "./website/favicon.svg" }));
   app.use("/client-base.js", serveStatic({ path: "./public/client-base.js" }));
