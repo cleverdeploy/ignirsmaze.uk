@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { layout } from "../render.js";
+import { assignVariant } from "../experiments.js";
 import { whisperHtml } from "./apps/whisper.js";
 import { cartographerHtml } from "./apps/cartographer.js";
 import { lanternHtml } from "./apps/lantern.js";
@@ -54,14 +55,15 @@ function stubHtml(name: string): string {
 export function appShellRouter(): Hono {
   const app = new Hono();
 
-  app.get("/m/:slug", (c) => {
+  app.get("/m/:slug", async (c) => {
     const slug = c.req.param("slug");
     if (!(APP_SLUGS as readonly string[]).includes(slug)) {
       return c.notFound();
     }
     const typedSlug = slug as AppSlug;
     const name = APP_NAMES[typedSlug];
-    const variant = "A"; // P5 will resolve via experiments
+    const session = c.get("session");
+    const variant = await assignVariant(session.id, typedSlug);
     const renderer = RENDERERS[typedSlug];
     const body = renderer ? renderer(variant) : stubHtml(name);
 
