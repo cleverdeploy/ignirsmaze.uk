@@ -1,5 +1,8 @@
 import { Hono } from "hono";
-import { layout, html, raw } from "../render.js";
+import { layout, raw } from "../render.js";
+import { whisperHtml } from "./apps/whisper.js";
+import { cartographerHtml } from "./apps/cartographer.js";
+import { lanternHtml } from "./apps/lantern.js";
 
 export const APP_SLUGS = [
   "whisper",
@@ -22,6 +25,24 @@ const APP_NAMES: Record<AppSlug, string> = {
   stone: "The Patient Stone",
 };
 
+type Renderer = (variant: string) => string;
+const RENDERERS: Partial<Record<AppSlug, Renderer>> = {
+  whisper: whisperHtml,
+  cartographer: cartographerHtml,
+  lantern: lanternHtml,
+};
+
+function stubHtml(name: string): string {
+  return `
+    <main class="chamber">
+      <p class="chamber-eyebrow">a chamber</p>
+      <h1>${name}</h1>
+      <p class="chamber-lede">under construction</p>
+      <p class="chamber-foot"><a href="/">return</a></p>
+    </main>
+  `;
+}
+
 export function appShellRouter(): Hono {
   const app = new Hono();
 
@@ -30,38 +51,21 @@ export function appShellRouter(): Hono {
     if (!(APP_SLUGS as readonly string[]).includes(slug)) {
       return c.notFound();
     }
-    const name = APP_NAMES[slug as AppSlug];
+    const typedSlug = slug as AppSlug;
+    const name = APP_NAMES[typedSlug];
     const variant = "A"; // P5 will resolve via experiments
+    const renderer = RENDERERS[typedSlug];
+    const body = renderer ? renderer(variant) : stubHtml(name);
 
-    const body = html`
-      <main class="chamber">
-        <p class="chamber-eyebrow">a chamber</p>
-        <h1>${name}</h1>
-        <p class="chamber-lede">under construction</p>
-        <p class="chamber-foot">
-          <a href="/">return</a>
-        </p>
-      </main>
-    `;
-
-    const extraHead = `<script>
-      document.body && document.body.setAttribute && document.body.setAttribute('data-app','${slug}');
-      document.body && document.body.setAttribute && document.body.setAttribute('data-variant','${variant}');
-    </script>`;
-
-    const layoutOpts = {
+    const layoutHtml = layout(name, body, {
       bodyClass: `chamber chamber-${slug}`,
       clientBase: true,
-      extraHead,
-    };
-
-    // We need data-app set on <body> BEFORE client-base.js runs so it triggers startView.
-    // Easiest: inject as body attribute through a small wrapper.
-    const htmlDoc = layout(name, body, layoutOpts).replace(
+    });
+    // Inject data-app and data-variant on body so client-base.js startView fires.
+    const htmlDoc = layoutHtml.replace(
       `<body class="chamber chamber-${slug}">`,
       `<body class="chamber chamber-${slug}" data-app="${slug}" data-variant="${variant}">`
     );
-
     return c.html(htmlDoc);
   });
 

@@ -4,6 +4,7 @@ import { sessionMiddleware } from "../session.js";
 import { eventsRouter } from "./events.js";
 import { homeHandler } from "./home.js";
 import { appShellRouter } from "./app-shell.js";
+import { llmRouter } from "./llm.js";
 
 export function publicApp(): Hono {
   const app = new Hono();
@@ -13,6 +14,7 @@ export function publicApp(): Hono {
   app.get("/", homeHandler);
   app.route("/", appShellRouter());
   app.route("/", eventsRouter());
+  app.route("/", llmRouter());
 
   // Static assets
   app.use("/styles.css", serveStatic({ path: "./website/styles.css" }));
