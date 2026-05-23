@@ -1,8 +1,12 @@
 import { Hono } from "hono";
-import { layout, raw } from "../render.js";
+import { layout } from "../render.js";
 import { whisperHtml } from "./apps/whisper.js";
 import { cartographerHtml } from "./apps/cartographer.js";
 import { lanternHtml } from "./apps/lantern.js";
+import { namesHtml } from "./apps/names.js";
+import { oracleHtml } from "./apps/oracle.js";
+import { mirrorHtml } from "./apps/mirror.js";
+import { stoneHtml } from "./apps/stone.js";
 
 export const APP_SLUGS = [
   "whisper",
@@ -30,6 +34,10 @@ const RENDERERS: Partial<Record<AppSlug, Renderer>> = {
   whisper: whisperHtml,
   cartographer: cartographerHtml,
   lantern: lanternHtml,
+  names: namesHtml,
+  oracle: oracleHtml,
+  mirror: mirrorHtml,
+  stone: stoneHtml,
 };
 
 function stubHtml(name: string): string {
