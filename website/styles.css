@@ -141,3 +141,63 @@ footer .sep { margin: 0 0.6rem; opacity: 0.5; }
   .lede { margin-bottom: 2rem; }
   footer { position: static; margin-top: 2rem; }
 }
+
+/* ── chamber pages ─────────────────────────────────────────────── */
+
+.chamber-eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  color: #6c5a45;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  margin-bottom: 1.2rem;
+}
+
+main.chamber {
+  text-align: center;
+  max-width: 36rem;
+  padding: 4rem 1.5rem;
+}
+
+main.chamber h1 {
+  font-family: "Cormorant", "Cormorant Garamond", "EB Garamond", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  letter-spacing: 0.03em;
+  color: #f3e2c4;
+  margin-bottom: 1.5rem;
+}
+
+.chamber-lede {
+  font-style: italic;
+  font-size: 1.1rem;
+  color: #a89074;
+  margin-bottom: 3rem;
+}
+
+.chamber-foot a {
+  font-size: 0.72rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #6c5a45;
+  text-decoration: none;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  transition: color 0.3s;
+}
+
+.chamber-foot a:hover {
+  color: #f4a261;
+}
+
+#cycle {
+  cursor: pointer;
+  user-select: none;
+}
+
+#cycle:hover {
+  color: #a89074;
+}
+
+#apex {
+  cursor: default;
+}
