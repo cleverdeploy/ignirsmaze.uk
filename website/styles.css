@@ -33,7 +33,7 @@ body {
 
 body.chamber {
   display: block;                  /* chambers can scroll; don't grid-center */
-  padding: 4rem 1.5rem 6rem;       /* leave space at bottom for footer */
+  padding: 2.5rem 1.5rem 3rem;     /* room for top/bottom without pushing footer off */
 }
 
 body::before {
@@ -181,7 +181,7 @@ main.chamber h1 {
   font-style: italic;
   font-size: 1.1rem;
   color: #a89074;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 }
 
 .chamber-foot a {
@@ -424,14 +424,14 @@ main.chamber.lantern { max-width: 60rem; }
 
 .lantern-room {
   position: relative;
-  height: 60vh;
-  min-height: 360px;
+  height: min(46vh, 380px);
+  min-height: 280px;
   background: radial-gradient(circle at 50% 50%, #0e0a06 0%, #050402 80%);
   border: 1px solid #1c1610;
   border-radius: 6px;
   overflow: hidden;
   cursor: none;
-  margin: 0 auto 1.5rem;
+  margin: 0 auto 1rem;
 }
 .lantern-lamp {
   position: absolute;
@@ -482,7 +482,7 @@ main.chamber.lantern .chamber-foot {
   gap: 1.5rem;
   flex-wrap: wrap;
   max-width: 60rem;
-  margin: 2rem auto 0;
+  margin: 1rem auto 0;
 }
 main.chamber.lantern .muted { color: #6c5a45; font-family: ui-monospace, monospace; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; }
 
