@@ -31,7 +31,8 @@
 
   const FRICTION = 0.985;          // velocity multiplier per ~16ms frame
   const BOUNCE_DAMP = 0.78;        // velocity multiplier after edge bounce
-  const STOP_SPEED = 0.05;         // pixels/ms — below this we consider stopped
+  const STOP_SPEED = 0.05;         // pixels/ms — below this we consider stopped (during flight)
+  const MIN_FLICK_SPEED = 0.4;     // pixels/ms — below this, release counts as a drop, not a flick
   const RESPAWN_DELAY = 700;       // ms after stop/off-screen before respawn
   const HOLE_RADIUS = 22;          // hit-zone radius (pixels)
   const VEL_SCALE = 1.0;           // release velocity scale
@@ -130,11 +131,12 @@
       v.x = (v.x / sp) * MAX_SPEED;
       v.y = (v.y / sp) * MAX_SPEED;
     }
-    if (sp < 0.05) {
-      // No velocity. If the ball is sitting in a hole, sink it; otherwise respawn.
+    if (sp < MIN_FLICK_SPEED) {
+      // Not enough velocity to count as a flick — even if the release is
+      // inside a hole, treat as a drop and respawn. Dropping is not allowed.
       ball.classList.remove("dragging");
       aim.style.display = "none";
-      if (checkHoleHit()) return;
+      if (window.IM) IM.event("ball-drop", { sp: +sp.toFixed(3) });
       state = "respawning";
       setTimeout(spawn, 200);
       return;
