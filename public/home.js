@@ -131,10 +131,11 @@
       v.y = (v.y / sp) * MAX_SPEED;
     }
     if (sp < 0.05) {
-      // basically no velocity — just snap back
-      state = "respawning";
+      // No velocity. If the ball is sitting in a hole, sink it; otherwise respawn.
       ball.classList.remove("dragging");
       aim.style.display = "none";
+      if (checkHoleHit()) return;
+      state = "respawning";
       setTimeout(spawn, 200);
       return;
     }
@@ -144,6 +145,26 @@
     ball.classList.add("flying");
     aim.style.display = "none";
     if (window.IM) IM.event("ball-flick", { vx: +v.x.toFixed(3), vy: +v.y.toFixed(3) });
+    // If the ball was released inside a hole, sink it immediately —
+    // otherwise the first frame's integration moves it past the hole
+    // before the collision check runs.
+    if (checkHoleHit()) return;
+  }
+
+  function checkHoleHit() {
+    const r = fieldRect();
+    const holes = field.querySelectorAll(".hole");
+    for (const h of holes) {
+      const hr = h.getBoundingClientRect();
+      const hx = hr.left - r.left + hr.width / 2;
+      const hy = hr.top - r.top + hr.height / 2;
+      const d = Math.hypot(hx - pos.x, hy - pos.y);
+      if (d < HOLE_RADIUS) {
+        sink(h);
+        return true;
+      }
+    }
+    return false;
   }
 
   function onPointerCancel() {
@@ -179,17 +200,11 @@
       if (pos.y < rad) { pos.y = rad; vel.y = -vel.y * BOUNCE_DAMP; bounceFx(); }
       if (pos.y > r.height - rad) { pos.y = r.height - rad; vel.y = -vel.y * BOUNCE_DAMP; bounceFx(); }
 
-      // hole collision: any hole whose center is within HOLE_RADIUS of ball center
-      const holes = field.querySelectorAll(".hole");
-      for (const h of holes) {
-        const hr = h.getBoundingClientRect();
-        const hx = hr.left - r.left + hr.width / 2;
-        const hy = hr.top - r.top + hr.height / 2;
-        const d = Math.hypot(hx - pos.x, hy - pos.y);
-        if (d < HOLE_RADIUS) {
-          sink(h);
-          break;
-        }
+      // hole collision
+      if (checkHoleHit()) {
+        // sink() updates state and animates away; stop integrating
+        requestAnimationFrame(frame);
+        return;
       }
 
       ball.style.transform = `translate(${pos.x - rad}px, ${pos.y - rad}px)`;
@@ -220,6 +235,8 @@
   function sink(holeEl) {
     if (state === "sunk") return;
     state = "sunk";
+    aim.style.display = "none";
+    ball.classList.remove("dragging", "flying");
     const slug = holeEl.dataset.slug;
     holeEl.classList.add("sunk");
     ball.classList.add("sunk");
