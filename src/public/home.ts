@@ -52,10 +52,9 @@ function holeSvg(slug: string): string {
 const HOME_BODY = `
 <div class="play-field" id="play-field" aria-hidden="false">
   ${HOLES.map(
-    (h) => `<div class="hole" data-slug="${h.slug}" style="left:${h.x}%;top:${h.y}%" aria-label="hole ${h.slug}">${holeSvg(h.slug)}</div>`
+    (h) =>
+      `<button type="button" class="hole" data-slug="${h.slug}" style="left:${h.x}%;top:${h.y}%" aria-label="a chamber">${holeSvg(h.slug)}</button>`
   ).join("")}
-  <div class="ball" id="ball" role="button" tabindex="0" aria-label="flick the ember"></div>
-  <svg class="aim-line" id="aim-line" aria-hidden="true"><line x1="0" y1="0" x2="0" y2="0"/></svg>
 </div>
 
 <main>
