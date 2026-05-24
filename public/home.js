@@ -269,6 +269,15 @@
     }, 200);
   });
 
+  // When the user navigates back (bfcache restore), the ball's "sunk" class
+  // and `state` variable survive — so without this the ball stays invisible
+  // until reload. e.persisted = true means restored from bfcache.
+  window.addEventListener("pageshow", (e) => {
+    if (e.persisted || state === "sunk" || state === "respawning") {
+      spawn();
+    }
+  });
+
   // Boot
   spawn();
   requestAnimationFrame(frame);
